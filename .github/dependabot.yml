@@ -1,0 +1,31 @@
+# Keeps the pinned GitHub Actions and base images current. Every workflow here
+# pins its actions to a commit SHA, and the Dockerfile pins its two images
+# (golang 1.27 on Debian 13 for the build, debian:trixie-slim for the image)
+# by digest; a pin never moves on its own, so Dependabot opens the pull
+# request, the real build and mc's own functional tests gate it, and the
+# auto-merge workflow merges it.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 3
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
+
+  # DAILY, AT 03:00 UTC: before the freshness check at 05:55, so a Debian
+  # repush is usually carried before the alarm can read it.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "03:00"
+      timezone: "Etc/UTC"
+    commit-message:
+      prefix: "build"

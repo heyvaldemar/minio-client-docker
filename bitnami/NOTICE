@@ -1,0 +1,13 @@
+The scripts under bitnami/scripts are Bitnami's, from
+https://github.com/bitnami/containers at commit
+e9581664a2cee4295bac7abefb84a50f785fdcc6 (2026-09-02, the last release of
+bitnami/minio-client, 2025.8.13-debian-12-r29), directory
+bitnami/minio-client/2025/debian-12: prebuildfs/opt/bitnami/scripts and
+rootfs/opt/bitnami/scripts.
+
+Copyright Broadcom, Inc. Licensed under the Apache License, Version 2.0, in
+bitnami/LICENSE.
+
+One file is changed: libbitnami.sh prints a welcome line that names this
+image instead of Bitnami's. tests/vendored-scripts.sh checks that every other
+file is byte for byte what that commit holds.

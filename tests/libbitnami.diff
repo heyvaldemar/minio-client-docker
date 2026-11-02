@@ -1,0 +1,11 @@
+5a6,8
+> #
+> # Changed by Vladimir Mikhalev for heyvaldemar/minio-client (2026): the
+> # welcome line names this image instead of Bitnami's, which it is not.
+45,46d47
+<     local github_url="https://github.com/bitnami/containers"
+< 
+48c49
+<     info "${BOLD}Welcome to the Bitnami ${BITNAMI_APP_NAME} container${RESET}"
+---
+>     info "${BOLD}${BITNAMI_APP_NAME} from heyvaldemar/minio-client, laid out like Bitnami's${RESET}"
