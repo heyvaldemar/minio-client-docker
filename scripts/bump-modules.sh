@@ -17,7 +17,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck disable=SC2016  # $BUILDPLATFORM is the Dockerfile's text, matched as it is
 go_image="$(sed -nE 's/^FROM --platform=\$BUILDPLATFORM (golang:[^ ]+@sha256:[0-9a-f]{64}) AS build$/\1/p' "$ROOT/Dockerfile")"
 pin="$(sed -nE 's/^ARG MC=(RELEASE\.[0-9TZ-]+:[0-9a-f]{40})$/\1/p' "$ROOT/Dockerfile" | sort -u)"
-[ -n "$go_image" ] && [ "$(printf '%s\n' "$pin" | grep -c .)" = 1 ] || { echo "cannot read the Go image or the one mc pin from the Dockerfile" >&2; exit 1; }
+if [ -z "$go_image" ] || [ "$(printf '%s\n' "$pin" | grep -c .)" != 1 ]; then
+  echo "cannot read the Go image or the one mc pin from the Dockerfile" >&2; exit 1
+fi
 
 mods=()
 for m in "$@"; do
