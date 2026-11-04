@@ -9,6 +9,8 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
+<!-- conformance: first release not before 2026-11-09 - one new Docker Hub image a week -->
+
 ### Added
 
 - **heyvaldemar/minio-client: mc RELEASE.2025-08-13T08-35-41Z, the last MinIO Client release, rebuilt on Debian 13 every week.** It is built from source at commit `7394ce0` with Go 1.27, and `patches/mc-go-modules.patch` raises the Go modules that carried a fixed vulnerability (grpc, golang.org/x/net and x/crypto, prometheus, klauspost/compress, and what they pull with them). The patch changes go.mod and go.sum only. Tags `2025.8.13` and `latest`; `linux/amd64` and `linux/arm64`. Not affiliated with or endorsed by MinIO, Inc.
