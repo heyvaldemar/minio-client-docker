@@ -8,6 +8,9 @@ rootfs/opt/bitnami/scripts.
 Copyright Broadcom, Inc. Licensed under the Apache License, Version 2.0, in
 bitnami/LICENSE.
 
-One file is changed: libbitnami.sh prints a welcome line that names this
-image instead of Bitnami's. tests/vendored-scripts.sh checks that every other
-file is byte for byte what that commit holds.
+Two files are changed: libbitnami.sh prints a welcome line that names this
+image instead of Bitnami's, and libminioclient.sh hands mc the secret key on
+stdin instead of as an argument, where every user on the host could read it.
+tests/vendored-scripts.sh checks that each differs by exactly its
+tests/<name>.diff and that every other file is byte for byte what that commit
+holds.

@@ -9,6 +9,10 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
+### Security
+
+- **The MinIO secret key is not on a command line.** Bitnami's `libminioclient.sh` configures its aliases with `mc alias set <alias> <url> <user> <secret key>`, the secret key in `mc`'s arguments, where every user on the host reads it with `ps`. Given three arguments, `mc` reads the secret key from stdin instead, so the script now hands it over that way from bash's own `printf`. It is the second file changed from Bitnami's: `bitnami/NOTICE` says so, and `tests/vendored-scripts.sh` requires each changed file to differ by exactly its `tests/<name>.diff`. The drop-in test's own `mc alias set` does the same, against both images.
+
 <!-- conformance: first release not before 2026-11-09 - one new Docker Hub image a week -->
 
 ### Added

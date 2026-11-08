@@ -6,9 +6,10 @@
 # Fetches bitnami/containers at the commit bitnami/NOTICE names and compares
 # every script with the file at the same path there (prebuildfs and rootfs
 # together, as Bitnami's image merged them). Each must be byte for byte the
-# same, except libbitnami.sh, whose difference must be exactly
-# tests/libbitnami.diff: the welcome line that names this image instead of
-# Bitnami's. Nothing may be added or missing.
+# same, except a file with a tests/<name>.diff beside this script, whose
+# difference must be exactly that: libbitnami.sh's welcome line that names this
+# image instead of Bitnami's, and libminioclient.sh handing mc the secret key on
+# stdin instead of as an argument. Nothing may be added or missing.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 commit="$(grep -oE '\b[0-9a-f]{40}\b' "$ROOT/bitnami/NOTICE" | head -1)"
@@ -36,13 +37,14 @@ else
   fail=1
 fi
 while IFS= read -r f; do
-  if [ "$f" = ./libbitnami.sh ]; then
+  known="$ROOT/tests/$(basename "$f" .sh).diff"
+  if [ "${f%/*}" = . ] && [ -f "$known" ]; then
     # Not a pipe: diff exits 1 on any difference, which pipefail would take
     # for the comparison's answer.
-    if cmp -s <(diff "$work/upstream/$f" "$ROOT/bitnami/scripts/$f") "$ROOT/tests/libbitnami.diff"; then
-      echo "OK: libbitnami.sh differs only by the welcome line in tests/libbitnami.diff"
+    if cmp -s <(diff "$work/upstream/$f" "$ROOT/bitnami/scripts/$f") "$known"; then
+      echo "OK: ${f#./} differs only by tests/${known##*/}"
     else
-      echo "FAIL: libbitnami.sh differs from Bitnami's by more than tests/libbitnami.diff" >&2; fail=1
+      echo "FAIL: ${f#./} differs from Bitnami's by more than tests/${known##*/}" >&2; fail=1
     fi
   elif ! cmp -s "$work/upstream/$f" "$ROOT/bitnami/scripts/$f"; then
     echo "FAIL: ${f#./} is not Bitnami's file" >&2; fail=1

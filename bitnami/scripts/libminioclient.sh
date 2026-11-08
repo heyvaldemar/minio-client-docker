@@ -3,6 +3,9 @@
 # SPDX-License-Identifier: APACHE-2.0
 #
 # Bitnami MinIO Client library
+#
+# Changed by Vladimir Mikhalev for heyvaldemar/minio-client (2026): the secret
+# key reaches mc on stdin, not as an argument every user on the host reads.
 
 # shellcheck disable=SC1091
 
@@ -98,7 +101,11 @@ minio_client_configure_server() {
     if [[ -n "$MINIO_SERVER_HOST" ]] && [[ -n "$MINIO_SERVER_ROOT_USER" ]] && [[ -n "$MINIO_SERVER_ROOT_PASSWORD" ]]; then
         scheme="$(echo "$MINIO_SERVER_SCHEME" | tr '[:upper:]' '[:lower:]')"
         info "Adding Minio host to 'mc' configuration..."
-        minio_client_execute alias set minio "${scheme}://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "$MINIO_SERVER_ROOT_USER" "$MINIO_SERVER_ROOT_PASSWORD"
+        # The secret key goes to mc on stdin, which it reads when it is not
+        # given as the fourth argument: as an argument it was on a command line
+        # every user on the host reads with ps. printf is bash's own.
+        printf '%s\n' "$MINIO_SERVER_ROOT_PASSWORD" \
+            | minio_client_execute alias set minio "${scheme}://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "$MINIO_SERVER_ROOT_USER"
     fi
 }
 
@@ -113,5 +120,7 @@ minio_client_configure_local() {
     local scheme
     scheme="$(echo "$MINIO_SERVER_SCHEME" | tr '[:upper:]' '[:lower:]')"
     info "Adding local Minio host to 'mc' configuration..."
-    minio_client_execute alias set local "${scheme}://localhost:${MINIO_SERVER_PORT_NUMBER}" "$MINIO_SERVER_ROOT_USER" "$MINIO_SERVER_ROOT_PASSWORD" >/dev/null 2>&1
+    # The secret key on stdin, never as an argument: see minio_client_configure_server.
+    printf '%s\n' "$MINIO_SERVER_ROOT_PASSWORD" \
+        | minio_client_execute alias set local "${scheme}://localhost:${MINIO_SERVER_PORT_NUMBER}" "$MINIO_SERVER_ROOT_USER" >/dev/null 2>&1
 }

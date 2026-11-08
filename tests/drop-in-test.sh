@@ -209,7 +209,7 @@ done
 # PATH, setting its own alias.
 own_alias() {
   docker run --rm --network "$net" --platform "$platform" -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD -e SERVER="$net-server" \
-    --entrypoint /bin/sh "$1" -c 'mc --no-color alias set s "http://$SERVER:9000" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null && mc --no-color ls s >/dev/null' 2>/dev/null
+    --entrypoint /bin/sh "$1" -c 'printf "%s\n" "$MINIO_ROOT_PASSWORD" | mc --no-color alias set s "http://$SERVER:9000" "$MINIO_ROOT_USER" >/dev/null && mc --no-color ls s >/dev/null' 2>/dev/null
 }
 if ! own_alias "$REF"; then bad "mc from PATH fails on bitnami/minio-client too; the test is wrong"
 elif own_alias "$IMAGE"; then ok "a command that calls mc from PATH with its own alias works on both"
