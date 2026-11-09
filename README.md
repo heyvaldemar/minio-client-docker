@@ -7,9 +7,9 @@
 
 mc, the MinIO Client, from its last release, rebuilt every week, signed, and laid out like `bitnami/minio-client`, so a Job, a compose service or a script written for that image runs on this one unchanged. Not affiliated with or endorsed by MinIO, Inc. or Broadcom.
 
-Checked 2026-11-02:
+Checked 2026-11-09:
 
-- `bitnami/minio-client` has no tags left. Its last versioned Debian image lives on, frozen since 2025-08-19, as `bitnamilegacy/minio-client:2025.7.21-debian-12-r3`; that repository counted 891,601 pulls.
+- `bitnami/minio-client` has no tags left. Its last versioned Debian image lives on, frozen since 2025-08-19, as `bitnamilegacy/minio-client:2025.7.21-debian-12-r3`; that repository counted 971,594 pulls.
 - MinIO archived [minio/mc](https://github.com/minio/mc) after RELEASE.2025-08-13T08-35-41Z, and `minio/mc` on Docker Hub returns 404.
 - The client command in the NOTES of Bitnami's last MinIO chart, bitnamicharts/minio 17.0.21, fails as published: its `clientImage` tag no longer exists. With an image that does exist, it still fails. `-- admin info minio` hands `admin` to Bitnami's entrypoint as the program to run, so the working form names `run.sh`, as in the examples below.
 
@@ -83,18 +83,29 @@ What is different, on purpose:
 - **Debian 13**, where Bitnami's image was Debian 12.
 - **mc RELEASE.2025-08-13T08-35-41Z**, built with Go 1.27 and the raised modules. The frozen image has RELEASE.2025-07-21T05-28-08Z, built with Go 1.24.6.
 - **Root owns mc, its directories and the scripts.** The user mc runs as can run them and cannot replace them. In Bitnami's image, group 0, its user's group, could write to `/opt/bitnami`.
-- **The welcome line names this image**, not Bitnami's. That line in `libbitnami.sh` is the only change to Bitnami's scripts.
+- **Two changes to Bitnami's scripts, both named in [`bitnami/NOTICE`](bitnami/NOTICE).** The welcome line in `libbitnami.sh` names this image, not Bitnami's. `libminioclient.sh` hands mc the secret key on stdin, where Bitnami's put it in mc's arguments and every user on the host could read it with `ps`.
 
 **It is checked, not claimed.** These run on every build, and nothing is published unless all pass:
 
 - `tests/drop-in-test.sh` compares the image with `bitnamilegacy/minio-client:2025.7.21-debian-12-r3`. It checks the same user, working directory, entrypoint, command, build `SHELL`, `HOME` and `PATH`; the same scripts; `/.mc`; no setuid file; and every executable on its `PATH`, or a reason in [`tests/drop-in-absent.tsv`](tests/drop-in-absent.tsv). Then both images run against one MinIO server in each way above: the root variables, the older names, a password from a `_FILE`, a port and an upper-case scheme, a chart's locked-down securityContext, and mc from `PATH` with its own alias. They must give the same answers for a bucket, an object, its size and contents, and a user's policy.
 - `tests/mc-functional.sh` runs MinIO's own `functional-tests.sh`, from the commit this builds, with this image's mc against a MinIO server. It covers buckets, objects (empty, small and multipart), metadata, storage classes, moves, presigned URLs, mirror, find, watch, aliases, users and policies.
 - `tests/charts-e2e.sh` installs bitnamicharts/minio 17.0.21 on a fresh kind cluster with this image as its `clientImage`. It runs a Job configured from the chart's own Secret as the example above is: a bucket made, a file copied in, its size read back. The same test passes on `bitnamilegacy/minio-client:2025.7.21-debian-12-r3`, which is how the test itself was checked.
-- `tests/vendored-scripts.sh` checks every script under `bitnami/scripts` against bitnami/containers at the commit [`bitnami/NOTICE`](bitnami/NOTICE) names: byte for byte, but the welcome line.
+- `tests/vendored-scripts.sh` checks every script under `bitnami/scripts` against bitnami/containers at the commit [`bitnami/NOTICE`](bitnami/NOTICE) names: byte for byte, but the two changes above, each of which must differ by exactly its `tests/<name>.diff`.
 
 ## CVE counts
 
-The `Publish Docker Image` workflow counts after every publish, on the images it has just published, and keeps the table as a run artifact. The first published images' counts go here with v1.0.0.
+Counted by Trivy 0.76.1 on 2026-11-09 in [run 42658394330](https://github.com/heyvaldemar/minio-client-docker/actions/runs/42658394330), on the images as published, on `linux/amd64`, once per CVE and package, Debian's packages and the Go binaries, with no vendor statements applied:
+
+| Image | What it is | OS | Critical | High | Medium | Low | Critical and high with a fix |
+|---|---|---|---|---|---|---|---|
+| `bitnamilegacy/minio-client:2025.7.21-debian-12-r3` | the last versioned `bitnami/minio-client`, frozen 2025-08-19 | Debian 12.11 | 19 | 145 | 264 | 148 | 126 |
+| `heyvaldemar/minio-client:latest` | this image | Debian 13.7 | 0 | 47 | 74 | 67 | 0 |
+
+- **The last column is the one a rebuild controls.** Every high finding left in this image is one Trivy lists no fixed version for. `scripts/cve-gate.sh` refuses to publish an image that carries one with a fix, so the week a fix ships, the next build carries it or nothing is published.
+- **The frozen image only gets worse.** Of its 126 fixable findings, 53 are in mc as the SBOM Bitnami shipped inside the image describes it: 26 in the Go standard library and 27 in Go modules, 11 of those in golang.org/x/crypto. The other 73 are in Debian 12's packages, 32 of those in Perl's and 18 in OpenSSL's. None of those fixes will reach it.
+- **There is no current Bitnami image to compare.** `bitnami/minio-client` has no tags left, so the frozen image is the only Bitnami minio-client anyone can still pull.
+
+The workflow counts again after every publish and keeps the table as a run artifact.
 
 ## Nothing you used yesterday disappears today
 

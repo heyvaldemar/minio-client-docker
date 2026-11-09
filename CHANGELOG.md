@@ -9,11 +9,7 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
-### Security
-
-- **The MinIO secret key is not on a command line.** Bitnami's `libminioclient.sh` configures its aliases with `mc alias set <alias> <url> <user> <secret key>`, the secret key in `mc`'s arguments, where every user on the host reads it with `ps`. Given three arguments, `mc` reads the secret key from stdin instead, so the script now hands it over that way from bash's own `printf`. It is the second file changed from Bitnami's: `bitnami/NOTICE` says so, and `tests/vendored-scripts.sh` requires each changed file to differ by exactly its `tests/<name>.diff`. The drop-in test's own `mc alias set` does the same, against both images.
-
-<!-- conformance: first release not before 2026-11-09 - one new Docker Hub image a week -->
+## [1.0.0] - 2026-11-09
 
 ### Added
 
@@ -24,10 +20,15 @@ the pipeline that builds it.
   - both images against one MinIO server, configured each way bitnami/minio-client is used, giving the same answers.
 - **MinIO's own functional tests for mc**, from the commit this builds, run on this image's mc against a MinIO server.
 - **Bitnami's own MinIO chart on kind** (bitnamicharts/minio 17.0.21) with this image as its client, in a Job configured from the chart's Secret.
-- **Bitnami's scripts checked against their source**: byte for byte, but the one welcome line `bitnami/NOTICE` names.
+- **Bitnami's scripts checked against their source**: byte for byte, but the two changes `bitnami/NOTICE` names.
 - **No fixable critical or high finding**: `scripts/cve-gate.sh` refuses an image that carries one, in Debian's packages, in Go, or in a Go module inside mc.
 - **A contract with the published image**: nothing a Job used under a tag disappears from it without a line in `tests/contract-removed.tsv`.
 - **Every digest signed** with cosign, keyless, and every tag's signature verified after signing. SBOM, SLSA provenance and a GitHub build attestation are attached; Trivy scans the published image, and CVE counts against the image it replaces follow every publish.
 - **Every test shown the breaks it exists for**: twenty planted violations in `tests/plants.tsv`, run in CI before anything is published.
 
-[Unreleased]: https://github.com/heyvaldemar/minio-client-docker/commits/main
+### Security
+
+- **The MinIO secret key is not on a command line.** Bitnami's `libminioclient.sh` configures its aliases with `mc alias set <alias> <url> <user> <secret key>`, the secret key in `mc`'s arguments, where every user on the host reads it with `ps`. Given three arguments, `mc` reads the secret key from stdin instead, so the script now hands it over that way from bash's own `printf`. It is the second file changed from Bitnami's: `bitnami/NOTICE` says so, and `tests/vendored-scripts.sh` requires each changed file to differ by exactly its `tests/<name>.diff`. The drop-in test's own `mc alias set` does the same, against both images.
+
+[Unreleased]: https://github.com/heyvaldemar/minio-client-docker/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/heyvaldemar/minio-client-docker/releases/tag/v1.0.0
