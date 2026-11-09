@@ -30,7 +30,7 @@ done
 out="$(mktemp -d)"
 trap 'rm -rf "$out"' EXIT
 cp "$ROOT/patches/mc-go-modules.patch" "$out/current.patch"
-docker run --rm -v "$out:/out" -e PIN="$pin" -e CGO_ENABLED=0 -e GOTOOLCHAIN=local "$go_image" bash -c '
+PIN="$pin" docker run --rm -v "$out:/out" -e PIN -e CGO_ENABLED=0 -e GOTOOLCHAIN=local "$go_image" bash -c '
   set -euo pipefail
   tag="${PIN%%:*}"; sha="${PIN#*:}"
   git -c advice.detachedHead=false clone -q --depth 1 --branch "$tag" https://github.com/minio/mc.git /src/mc

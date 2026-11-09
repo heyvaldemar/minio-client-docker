@@ -138,7 +138,7 @@ mc_run() {
   local image="$1"; shift
   local opts=()
   while [ "$1" != -- ]; do opts+=("$1"); shift; done; shift
-  docker run --rm --network "$net" --platform "$platform" -e MINIO_SERVER_HOST="$net-server" \
+  MINIO_SERVER_HOST="$net-server" docker run --rm --network "$net" --platform "$platform" -e MINIO_SERVER_HOST \
     "${opts[@]}" "$image" "$RUN_SH" --no-color "$@" 2>"$work/stderr"
 }
 # Why the last call failed: mc's own error line, which names no credential.
@@ -208,7 +208,7 @@ done
 # A compose service or a script that replaces the command and calls mc from
 # PATH, setting its own alias.
 own_alias() {
-  docker run --rm --network "$net" --platform "$platform" -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD -e SERVER="$net-server" \
+  SERVER="$net-server" docker run --rm --network "$net" --platform "$platform" -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD -e SERVER \
     --entrypoint /bin/sh "$1" -c 'printf "%s\n" "$MINIO_ROOT_PASSWORD" | mc --no-color alias set s "http://$SERVER:9000" "$MINIO_ROOT_USER" >/dev/null && mc --no-color ls s >/dev/null' 2>/dev/null
 }
 if ! own_alias "$REF"; then bad "mc from PATH fails on bitnami/minio-client too; the test is wrong"

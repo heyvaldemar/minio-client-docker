@@ -64,7 +64,7 @@ for _ in $(seq 1 60); do
 done
 $ready || { docker logs "$net-server" 2>&1 | tail -20 >&2; echo "the MinIO server never became ready" >&2; exit 1; }
 
-if docker run --rm --network "$net" -e SERVER_ENDPOINT="$net-server:9000" -e ACCESS_KEY -e SECRET_KEY -e ENABLE_HTTPS=0 \
+if SERVER_ENDPOINT="$net-server:9000" docker run --rm --network "$net" -e SERVER_ENDPOINT -e ACCESS_KEY -e SECRET_KEY -e ENABLE_HTTPS=0 \
     -v "$work/functional-tests.sh:/tests/functional-tests.sh:ro" -w /tmp --entrypoint bash "$tag" /tests/functional-tests.sh >"$work/out" 2>&1; then
   ran="$(grep -cE '^Running [a-z_]+\(\)$' "$work/out" || true)"
   # Its last test is test_admin_users: an exit before it is not a pass.
