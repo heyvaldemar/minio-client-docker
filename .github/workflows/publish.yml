@@ -7,7 +7,9 @@ on:
     branches: [main]
   schedule:
     # Weekly rebuild: the week's Debian security updates. The pinned digests,
-    # the mc commit and the Go module patch move only by pull request.
+    # the mc commit and the Go module patch never move in this build: a commit
+    # on main moves them, a person's or, for a base re-pushed with the same
+    # toolchain, the fleet triage's.
     - cron: "35 6 * * 1"
   workflow_dispatch:
 

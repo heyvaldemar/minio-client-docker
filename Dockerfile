@@ -24,7 +24,7 @@
 # release and its commit; the release tag carries `.rebuild`, because these
 # are not MinIO's bytes. scripts/bump-modules.sh writes the patch again.
 # ──────────────────────────────────────────────────────────────────────────────
-FROM --platform=$BUILDPLATFORM golang:1.27-trixie@sha256:af1bfc2614ebb1dbd31af514b78740fd678850e76498762b425ecee4c5c6ea80 AS build
+FROM --platform=$BUILDPLATFORM golang:1.27-trixie@sha256:c47c3fda018d13d43a6bf5ebac3e5bba8a23a35782aa4faf531afaf47c64c39f AS build
 
 ARG TARGETOS
 ARG TARGETARCH

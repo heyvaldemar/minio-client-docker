@@ -9,9 +9,15 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-12
+
 ### Fixed
 
-- **The daily pin check no longer reports an index pushed again over the same builds as drift.** `freshness.yml` compared each pinned base digest with the digest its tag names now and failed on any difference, so a publisher pushing the index again over the very same images (a platform added, an attestation rewritten) turned it red for an image that had not changed. It now also compares the builds this image is made from under both digests: linux/amd64 for a stage built on the runner, linux/amd64 and linux/arm64 for a stage built for each published platform. The same builds pass with a notice naming both digests; a new build, or one that cannot be read, still fails.
+- **The daily pin check no longer reports an index pushed again over the same builds as drift.** `freshness.yml` compared each pinned base digest with the digest its tag names now and failed on any difference, so a publisher pushing the index again over the very same images (a platform added, an attestation rewritten) turned it red for an image that had not changed. It now also compares the builds this image is made from under both digests: linux/amd64 alone when every stage from that base is built on the runner (`--platform=$BUILDPLATFORM` or `${BUILDPLATFORM}`), linux/amd64 and linux/arm64 when any stage is built for each published platform, as the fleet's triage judges a re-pushed base. The same builds pass with a notice naming both digests; a new build, or one that cannot be read, still fails.
+
+### Security
+
+- **Go 1.27.4 builds mc.** `golang:1.27-trixie` moved from `sha256:af1bfc26…` to `sha256:c47c3fda…`, Go 1.27.3 to Go 1.27.4, a security release: CVE-2026-97054 in the standard library's net/http server, which mc's binary carries, and eleven in how the go command, the compiler and the linker handle cgo and linker flags. mc's own code and `patches/mc-go-modules.patch` are unchanged.
 
 ## [1.0.0] - 2026-11-09
 
@@ -34,5 +40,6 @@ the pipeline that builds it.
 
 - **The MinIO secret key is not on a command line.** Bitnami's `libminioclient.sh` configures its aliases with `mc alias set <alias> <url> <user> <secret key>`, the secret key in `mc`'s arguments, where every user on the host reads it with `ps`. Given three arguments, `mc` reads the secret key from stdin instead, so the script now hands it over that way from bash's own `printf`. It is the second file changed from Bitnami's: `bitnami/NOTICE` says so, and `tests/vendored-scripts.sh` requires each changed file to differ by exactly its `tests/<name>.diff`. The drop-in test's own `mc alias set` does the same, against both images.
 
-[Unreleased]: https://github.com/heyvaldemar/minio-client-docker/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/heyvaldemar/minio-client-docker/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/heyvaldemar/minio-client-docker/releases/tag/v1.0.1
 [1.0.0]: https://github.com/heyvaldemar/minio-client-docker/releases/tag/v1.0.0
