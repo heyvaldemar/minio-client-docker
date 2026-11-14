@@ -9,6 +9,10 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
+### Changed
+
+- **`SECURITY.md` and the image's `org.opencontainers.image.authors` label give the public contact address**, and `SECURITY.md` links GitHub's form for a private vulnerability report directly. The label reaches the published images with the next weekly rebuild; nothing else in them changes.
+
 ## [1.0.1] - 2026-11-12
 
 ### Fixed

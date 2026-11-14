@@ -122,7 +122,7 @@ ENV HOME=/ \
 # built the image. Both are also in /opt/bitnami/minio-client/licenses.
 LABEL org.opencontainers.image.title="minio-client" \
       org.opencontainers.image.description="mc, the MinIO Client, rebuilt from its last release on Debian 13, rebuilt weekly, signed; a drop-in for bitnami/minio-client. Not affiliated with or endorsed by MinIO, Inc." \
-      org.opencontainers.image.authors="Vladimir Mikhalev <v@valdemar.ai>" \
+      org.opencontainers.image.authors="Vladimir Mikhalev <connect@valdemar.ai>" \
       org.opencontainers.image.vendor="heyvaldemar" \
       org.opencontainers.image.source="https://github.com/heyvaldemar/minio-client-docker" \
       org.opencontainers.image.documentation="https://github.com/heyvaldemar/minio-client-docker#readme" \
