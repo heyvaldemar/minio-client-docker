@@ -11,7 +11,7 @@ the pipeline that builds it.
 
 _(no unreleased changes yet)_
 
-## [1.0.2] - 2026-11-16
+## [1.0.2] - 2026-11-15
 
 ### Added
 
