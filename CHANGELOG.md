@@ -9,9 +9,22 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
+_(no unreleased changes yet)_
+
+## [1.0.2] - 2026-11-15
+
+### Added
+
+- **Every tag a run pushes is read back from Docker Hub after signing.** For each one the run resolves the digest the tag names now, and requires that digest's cosign signature (`sha256-<digest>.sig`, HTTP 200) and a `cosign verify` that passes: for the digest this run pushed, as this run's exact workflow identity and commit; for a digest another run has moved the tag to since, as this repository's publish workflow on any ref. A missing signature fails the job. A digest this run built is then signed again; a digest it did not build never is. It also runs after a push refused half way: the build reports no digest then, so the tags it had already moved are reported and fail the job, but are not signed. What it found goes to the run summary (`scripts/verify-published.sh`).
+- **The signing steps are shown each failure they exist for, before anything is published.** Signing, attesting and reading back are one action, `.github/actions/sign-attest-verify`, the same as in heyvaldemar/aws-kubectl-docker 2.3.1. The build job runs it after its push, and a new `signing` job runs it six times on throwaway images in a registry on the runner, signed with keys made there. The cases: nothing planted; the real attestation step failing (the job has no OIDC token, so the step fails before it contacts anything; the image is signed before the failure, and the job still fails); signing failing; signing skipped without an error, where the read-back alone fails the job and signs the digest; a tag another run moved to an image signed by a stranger's key (the job fails, and that image is left as it is); and a push that stopped half way (the job fails, nothing is signed). Nothing reaches Docker Hub, GitHub's attestation store or Sigstore's public log. The build waits for it, and so does the required check.
+
 ### Changed
 
 - **`SECURITY.md` and the image's `org.opencontainers.image.authors` label give the public contact address**, and `SECURITY.md` links GitHub's form for a private vulnerability report directly. The label reaches the published images with the next weekly rebuild; nothing else in them changes.
+
+### Fixed
+
+- **Signing no longer depends on the build attestation.** The cosign steps came after `actions/attest-build-provenance` and ran only if it succeeded: the order in which heyvaldemar/aws-kubectl-docker shipped an unsigned image on 2 November 2026, when Rekor, Sigstore's transparency log, answered its attestation 502 and three of its tags named that image for 37 hours. No run here hit it. The pushed digest is now signed first, then attested; a failed attestation still fails the job, after the signature exists. It is signed once, not once per tag (the signature belongs to the digest either way), and a failed attempt is tried again twice. The step that verified every tag's signature came after signing with the same condition, so it would have been skipped too; the read-back below replaces it.
 
 ## [1.0.1] - 2026-11-12
 
@@ -44,6 +57,7 @@ the pipeline that builds it.
 
 - **The MinIO secret key is not on a command line.** Bitnami's `libminioclient.sh` configures its aliases with `mc alias set <alias> <url> <user> <secret key>`, the secret key in `mc`'s arguments, where every user on the host reads it with `ps`. Given three arguments, `mc` reads the secret key from stdin instead, so the script now hands it over that way from bash's own `printf`. It is the second file changed from Bitnami's: `bitnami/NOTICE` says so, and `tests/vendored-scripts.sh` requires each changed file to differ by exactly its `tests/<name>.diff`. The drop-in test's own `mc alias set` does the same, against both images.
 
-[Unreleased]: https://github.com/heyvaldemar/minio-client-docker/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/heyvaldemar/minio-client-docker/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/heyvaldemar/minio-client-docker/releases/tag/v1.0.2
 [1.0.1]: https://github.com/heyvaldemar/minio-client-docker/releases/tag/v1.0.1
 [1.0.0]: https://github.com/heyvaldemar/minio-client-docker/releases/tag/v1.0.0
