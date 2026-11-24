@@ -9,7 +9,10 @@ the pipeline that builds it.
 
 ## [Unreleased]
 
-_(no unreleased changes yet)_
+### Security
+
+- **`golang:1.27-trixie` was rebuilt upstream**; the pin moved from `sha256:f18c3d73a184…` to `sha256:0f82c58710c4…`. Same tag and the same toolchain inside (`GOLANG_VERSION=1.27.4`), a rebuilt base: the usual shape of a security fix in a base layer. The published tags carry it once the image is rebuilt, tested and signed from this commit.
+- **`debian:trixie-slim` was rebuilt upstream**; the pin moved from `sha256:a72b4433de1c…` to `sha256:8aa5a7bf5a19…`. Same tag, a rebuilt base: the usual shape of a security fix in a base layer. The published tags carry it once the image is rebuilt, tested and signed from this commit.
 
 ## [1.0.3] - 2026-11-16
 

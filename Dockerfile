@@ -24,7 +24,7 @@
 # release and its commit; the release tag carries `.rebuild`, because these
 # are not MinIO's bytes. scripts/bump-modules.sh writes the patch again.
 # ──────────────────────────────────────────────────────────────────────────────
-FROM --platform=$BUILDPLATFORM golang:1.27-trixie@sha256:f18c3d73a184fb0582828510722e723b63a93f7188d11dd223d9be6f6880e65d AS build
+FROM --platform=$BUILDPLATFORM golang:1.27-trixie@sha256:0f82c58710c405cc012da2fbd2b04bde9ced20392a89f66062822d711d7d6b4b AS build
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -70,7 +70,7 @@ RUN set -euo pipefail; \
 # beside mc (CA certificates, jq, procps) and Bitnami's own scripts from
 # bitnami/scripts.
 # ──────────────────────────────────────────────────────────────────────────────
-FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS final
+FROM debian:trixie-slim@sha256:8aa5a7bf5a1955bddbe7d74fcdd0b91ab30e74362a8b73af672b0481b35b44a0 AS final
 
 ARG TARGETARCH
 ARG MC=RELEASE.2025-08-13T08-35-41Z:7394ce0dd2a80935aded936b09fa12cbb3cb8096
